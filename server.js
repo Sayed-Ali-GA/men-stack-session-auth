@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const session = require('express-session')
 const authController = require('./controllers/auth.controller')
 const MongoStore = require('connect-mongo')
+const isSignedIn = require('./middleware/is-signes-iv')
 
 // DATABASE CONNECTION
 mongoose.connect(process.env.MONGODB_URI)
@@ -24,7 +25,7 @@ app.use(session({
     saveUninitialized: true,
     store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URI,
-        
+
     })
 }))
 
@@ -34,6 +35,10 @@ app.get('/', (req, res) => {
 
 // ROUTES
 app.use('/auth', authController)
+
+app.get('/vip-lounge', isSignedIn, (req, res) => {
+    res.send(`Welcome`)
+})
 
 const port = process.env.PORT ? process.env.PORT : "3003"
 app.listen(port, () => {
